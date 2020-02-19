@@ -16,10 +16,15 @@
         <summary lang="en_GB">AHLTV</summary>
         <description lang="en_GB">Watch AHL games on Kodi, with HD quality streaming</description>
         <disclaimer lang="en_GB">Requires a valid AHLTV account to view live and archived games.</disclaimer>
+        <assets>
+        	<icon>icon.png</icon>
+            <fanart>fanart.jpg</fanart>
+        </assets>
         <news>
             - Initial Release
         </news>
         <license>GPL-2.0-or-later</license>
+        <forum>https://forum.kodi.tv/showthread.php?tid=243756</forum> <!-- make a real thread? -->
         <website>https://www.theahl.com/ahltv</website>
         <source>https://github.com/sobralik/plugin.video.ahltv</source>
     </extension>

@@ -2,9 +2,14 @@ import pytz, time
 import os
 import calendar
 from datetime import date, datetime, timedelta
-from cStringIO import StringIO
-from resources.lib.globals import ROOTDIR, ICON
-import urllib
+from io import BytesIO
+from resources.lib.globals import ROOTDIR, ADDON_PATH_PROFILE, ICON
+try:
+    from urllib import quote  # Python 2.X
+    from urllib import urlopen
+except ImportError:
+    from urllib.parse import quote  # Python 3+
+    from urllib.request import urlopen
 import sys
 import xbmc
 
@@ -50,7 +55,7 @@ def string_to_date(string, date_format):
 
 def get_game_icon(homeId, homeImgPath, awayId, awayImgPath):
     # Check if game image already exists
-    image_path = ROOTDIR + '/resources/media/game_icons/' + str(awayId) + '_at_' + str(homeId) + '.png'
+    image_path = ADDON_PATH_PROFILE + 'game_icons/' + str(awayId) + '_at_' + str(homeId) + '.png'
     file_name = os.path.join(image_path)
     if not os.path.isfile(file_name):
         try:
@@ -75,20 +80,28 @@ def create_game_icon(homeSrcImg, awaySrcImg, image_path):
     bg = Image.open(ROOTDIR + '/resources/media/game_icon_bg.png')
     size = 200, 200
 
-    img_file = urllib.urlopen(homeSrcImg)
-    im = StringIO(img_file.read())
+    img_file = urlopen(homeSrcImg)
+    im = BytesIO(img_file.read())
     home_image = Image.open(im)
     home_image.thumbnail(size, Image.ANTIALIAS)
     home_image = home_image.convert("RGBA")
 
-    img_file = urllib.urlopen(awaySrcImg)
-    im = StringIO(img_file.read())
+    img_file = urlopen(awaySrcImg)
+    im = BytesIO(img_file.read())
     away_image = Image.open(im)
     away_image.thumbnail(size, Image.ANTIALIAS)
     away_image = away_image.convert("RGBA")
 
     bg.paste(away_image, (0, 60), away_image)
     bg.paste(home_image, (200, 60), home_image)
+
+    if not os.path.exists(os.path.dirname(image_path)):
+        try:
+            os.makedirs(os.path.dirname(image_path))
+        except OSError as exc: # Guard against race condition
+            if exc.errno != errno.EEXIST:
+                raise
+
     bg.save(image_path)
 
 def log(msg, error = False):
@@ -100,6 +113,6 @@ def log(msg, error = False):
     try:
         import xbmc
         full_msg = "plugin.video.ahltv: {}".format(msg)
-        xbmc.log(full_msg, level=xbmc.LOGERROR if error else xbmc.LOGINFO)
+        xbmc.log(full_msg, level=xbmc.LOGERROR if error else xbmc.LOGDEBUG)
     except:
         print(msg)
