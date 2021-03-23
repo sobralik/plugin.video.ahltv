@@ -38,7 +38,8 @@ def daily_games(game_day):
         else:
             day_games_label += " " + LOCAL_STRING(32007)
 
-        list_item = xbmcgui.ListItem(label=day_games_label, thumbnailImage=AHL_LOGO)
+        list_item = xbmcgui.ListItem(label=day_games_label)
+        list_item.setArt({ 'thumb': AHL_LOGO })
         list_item.setProperty('fanart_image', FANART)
 
         u = sys.argv[0] + "?mode=" + str(101) + "&game_day=" + quote(game_day)
